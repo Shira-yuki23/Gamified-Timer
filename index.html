@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
     <meta name="theme-color" content="#4ade80">
     <title>MeloFocus</title>
 
@@ -39,6 +40,20 @@
 
     </header>
 
+
+    <section class="account-bar" aria-label="Account">
+        <div><strong id="accountName">Guest</strong><p id="syncStatus" role="status">Saved on this browser</p></div>
+        <div class="account-actions">
+            <button id="googleSignIn" type="button">Continue with Google</button>
+            <button id="syncRetry" type="button" hidden>Retry sync</button>
+            <button id="googleSignOut" type="button" hidden>Sign out</button>
+        </div>
+        <div id="syncConflict" hidden>
+            <p>Progress changed on another device. Choose a copy to continue syncing.</p>
+            <button id="useCloudProgress" type="button">Use cloud copy</button>
+            <button id="keepLocalProgress" type="button">Keep this device</button>
+        </div>
+    </section>
 
     <main>
 
@@ -253,6 +268,8 @@
 
                 Would you like to take a break?
 
+                <span id="breakDecisionCountdown" style="display: block; font-size: 0.85em; margin-top: 8px;">Focus starts automatically in 20 seconds.</span>
+
             </p>
 
             <div class="popup-buttons">
@@ -343,6 +360,8 @@
 
 
     <script src="script.js"></script>
+    <script src="firebase-config.js"></script>
+    <script src="google-account.js"></script>
 
 </body>
 

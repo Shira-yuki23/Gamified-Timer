@@ -971,3 +971,17 @@ header h1{
 
     color:#333;
 }
+
+/* Google account and sync */
+.account-bar { margin: 22px 35px 0; padding: 16px 22px; border-radius: 20px;
+    display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap;
+    background: rgba(255,255,255,.65); box-shadow: 0 6px 18px rgba(0,0,0,.05); }
+.account-bar strong { color: #b92c65; }
+.account-bar p { font-size: .82rem; margin-top: 4px; }
+.account-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+.account-bar button { background: white; border: 1px solid #ecc2d3; color: #44343c; padding: 10px 16px; }
+.account-bar button:disabled { opacity: .6; cursor: default; transform: none; }
+.account-bar [hidden] { display: none; }
+#syncConflict { width: 100%; border-top: 1px solid #ecc2d3; padding-top: 12px; }
+#syncConflict button { margin: 10px 8px 0 0; }
+@media(max-width:650px) { .account-bar { margin: 18px 20px 0; } }

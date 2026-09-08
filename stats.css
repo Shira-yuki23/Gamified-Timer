@@ -1,0 +1,12 @@
+.stats-page main { display:block; max-width:1000px; margin:auto; }
+.weekly-panel { gap:18px; padding:32px; }
+.weekly-panel h2 { color:#ad336a; }
+.weekly-totals { display:flex; gap:18px; width:100%; }
+.weekly-totals .card { flex:1; width:auto; }
+.stats-table-wrap { width:100%; overflow:auto; }
+table { width:100%; border-collapse:collapse; text-align:left; }
+th,td { padding:15px 12px; border-bottom:1px solid rgba(125,100,130,.2); }
+.stats-note,#weekRange,#statsMessage { font-size:.85rem; text-align:center; }
+.stats-page header a { color:inherit; }
+html[data-theme="dark"] .weekly-panel h2 { color:#ffadd0; }
+@media(max-width:600px) { .weekly-panel { padding:20px 12px; } .weekly-totals { flex-direction:column; } th,td { padding:12px 7px; } }

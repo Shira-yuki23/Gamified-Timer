@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#ffd8ec"><title>Weekly Stats · MeloFocus</title>
+<link rel="icon" href="icons/icon-192.png"><script src="theme.js"></script>
+<link rel="stylesheet" href="style.css"><link rel="stylesheet" href="stats.css">
+</head>
+<body class="stats-page">
+<div class="background"><div class="blob blob1"></div><div class="blob blob2"></div></div>
+<header><h1>Weekly Stats 🌸</h1><a href="index.html">Back to timer</a></header>
+<main>
+<section class="progress-panel weekly-panel">
+<h2>Your last 7 days</h2><p id="weekRange"></p>
+<div class="weekly-totals"><div class="card"><h3>Focus time</h3><p id="totalFocus">0m</p></div>
+<div class="card"><h3>Completed sessions</h3><p id="totalSessions">0</p></div></div>
+<p class="stats-note">Includes focus time before pausing or resetting. Breaks are excluded.</p>
+<div class="stats-table-wrap"><table><thead><tr><th scope="col">Day</th><th scope="col">Focus time</th><th scope="col">Sessions</th></tr></thead><tbody id="dailyStats"></tbody></table></div>
+<p id="statsMessage" role="status"></p><p class="stats-note">Saved in this browser. Tracking starts from this update.</p>
+</section>
+</main><script src="stats.js"></script>
+</body></html>

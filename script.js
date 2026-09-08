@@ -4,6 +4,7 @@ let remainingSeconds = totalSeconds;
 let isRunning = false;
 let isBreak = false;
 let sessionCount = 1;
+let sessionDate = null;
 let endTime = null;
 let breakDecisionInterval = null;
 let breakDecisionDeadline = null;
@@ -114,6 +115,7 @@ function startTimer() {
 
     // Calculate when the timer should finish
     endTime = Date.now() + (remainingSeconds * 1000);
+    if (!isBreak) window.MeloStats?.start(endTime);
 
     timerInterval = setInterval(() => {
 
@@ -143,6 +145,7 @@ function pauseTimer() {
 
     closeBreakDecision();
     if (!isRunning) return;
+    window.MeloStats?.stop();
 
     clearInterval(timerInterval);
 
@@ -192,6 +195,7 @@ function resetTimer() {
    Stop Timer Helper
 ================================ */
 function stopTimer() {
+    window.MeloStats?.stop();
 
     clearInterval(timerInterval);
 
@@ -206,8 +210,10 @@ function stopTimer() {
    Timer Finished
 ================================ */
 function timerFinished(){
+    checkSessionDay();
     playCompletionSound(isBreak ? "back" : "done");
     if(!isBreak){
+        window.MeloStats?.complete();
         sessionCount++;
         sessionLabel.textContent =
             "#" + sessionCount;
@@ -254,6 +260,7 @@ function changeToBreak(){
    Live Clock
 ================================ */
 function updateClock(){
+    checkSessionDay();
     let now =new Date();
     currentTime.textContent =now.toLocaleTimeString();
 }
@@ -475,12 +482,15 @@ function loadData(){
     tasks = data.tasks;
     breakBankMinutes = data.breakBankMinutes;
     sessionCount = data.sessionCount;
+    sessionDate = data.sessionDate;
     focusInput.value = data.focusMinutes;
     breakInput.value = data.breakMinutes;
     sessionLabel.textContent = "#" + sessionCount;
     totalSeconds = data.focusMinutes * 60;
     remainingSeconds = totalSeconds;
     renderTasks(); updateBreakBank(); updateTimerDisplay(); updateProgress();
+    checkSessionDay();
+    saveData();
 }
 /* ===============================
    Button Events
@@ -707,7 +717,7 @@ if ("serviceWorker" in navigator) {
    Local progress storage
 ================================ */
 function defaultProgress() {
-    return {tasks: [], breakBankMinutes: 0, sessionCount: 1, focusMinutes: 25, breakMinutes: 5};
+    return {tasks: [], breakBankMinutes: 0, sessionCount: 1, sessionDate: localSessionDate(), focusMinutes: 25, breakMinutes: 5};
 }
 function validateProgress(data) {
     const finite = (n, min, max, integer = false) => typeof n === "number" && Number.isFinite(n) &&
@@ -723,10 +733,11 @@ function validateProgress(data) {
         return {name: task.name, reward: task.reward, completed: task.completed};
     });
     return {tasks: cleanTasks, breakBankMinutes: data.breakBankMinutes, sessionCount: data.sessionCount,
+        sessionDate: /^\d{4}-\d{2}-\d{2}$/.test(data.sessionDate || "") ? data.sessionDate : localSessionDate(),
         focusMinutes: data.focusMinutes, breakMinutes: data.breakMinutes};
 }
 function currentProgress() {
-    return validateProgress({tasks, breakBankMinutes, sessionCount,
+    return validateProgress({tasks, breakBankMinutes, sessionCount, sessionDate,
         focusMinutes: Number(focusInput.value), breakMinutes: Number(breakInput.value)});
 }
 function storedProgress() {
@@ -803,4 +814,27 @@ timerDisplay.addEventListener("keydown", event => {
         document.getElementById("timerEditHint").textContent = "Tap the time to set minutes";
         timerDisplay.blur();
     }
+});
+/* Daily session counter, using the device's local calendar date. */
+function localSessionDate() {
+    const now = new Date();
+    return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
+}
+function checkSessionDay() {
+    // The live clock starts before saved progress has been loaded.
+    if (sessionDate === null) return;
+    const today = localSessionDate();
+    if (sessionDate === today) return;
+    sessionDate = today;
+    sessionCount = 1;
+    sessionLabel.textContent = "#1";
+    saveData();
+}
+document.addEventListener("visibilitychange", () => {
+    if (!document.hidden) checkSessionDay();
+});
+window.addEventListener("pageshow", checkSessionDay);
+document.getElementById("weeklyStatsBtn").addEventListener("click", () => {
+    window.MeloStats?.checkpoint();
+    window.open("stats.html", "meloWeeklyStats", "width=960,height=760");
 });

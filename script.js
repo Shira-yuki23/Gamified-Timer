@@ -836,5 +836,26 @@ document.addEventListener("visibilitychange", () => {
 window.addEventListener("pageshow", checkSessionDay);
 document.getElementById("weeklyStatsBtn").addEventListener("click", () => {
     window.MeloStats?.checkpoint();
-    window.open("stats.html", "meloWeeklyStats", "width=960,height=760");
+    location.hash = "stats";
 });
+// Display stats as an in-app screen, keeping the timer alive underneath.
+const statsScreen = document.createElement("iframe");
+statsScreen.className = "weekly-stats-screen";
+statsScreen.title = "Weekly focus statistics";
+statsScreen.hidden = true;
+document.body.appendChild(statsScreen);
+function updateStatsScreen() {
+    const open = location.hash === "#stats";
+    if (open && !statsScreen.getAttribute("src")) statsScreen.src = "stats.html";
+    statsScreen.hidden = !open;
+    document.body.classList.toggle("viewing-stats", open);
+    if (open) statsScreen.focus();
+}
+window.addEventListener("hashchange", updateStatsScreen);
+window.addEventListener("message", event => {
+    if (event.source !== statsScreen.contentWindow || event.data !== "melo:back-to-timer") return;
+    history.replaceState(null, "", location.pathname + location.search);
+    updateStatsScreen();
+    document.getElementById("weeklyStatsBtn").focus();
+});
+updateStatsScreen();

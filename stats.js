@@ -42,3 +42,10 @@
     window.addEventListener("storage", render);
     document.addEventListener("visibilitychange", () => { if (!document.hidden) render(); });
 })();
+// Embedded stats return to the running timer; standalone stats retain the link.
+if (window.parent !== window) {
+    document.querySelector('a[href="index.html"]').addEventListener("click", event => {
+        event.preventDefault();
+        window.parent.postMessage("melo:back-to-timer", "*");
+    });
+}

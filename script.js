@@ -33,11 +33,13 @@ progressCircle.style.strokeDasharray =
    Update Timer Text
 ================================ */
 function updateTimerDisplay(){
+    document.getElementById("focusModeBtn").setAttribute("aria-pressed", String(!isBreak));
+    document.getElementById("breakModeBtn").setAttribute("aria-pressed", String(isBreak));
     let minutes =
         Math.floor(remainingSeconds / 60);
     let seconds =
         remainingSeconds % 60;
-    timerDisplay.textContent =
+    timerDisplay.value =
         `${String(minutes).padStart(2,"0")}:${String(seconds).padStart(2,"0")}`;
 }
 /* ===============================
@@ -745,3 +747,60 @@ for (const input of [focusInput, breakInput]) {
         saveData();
     });
 }
+
+/* Manual mode selection and break bank reset. */
+function selectTimerMode(breakMode) {
+    if (isBreak === breakMode && breakDecisionDeadline === null) return;
+    stopTimer();
+    closeBreakDecision();
+    redeemOverlay.classList.add("hidden");
+    isBreak = breakMode;
+    modeLabel.textContent = isBreak ? "BREAK MODE ☕" : "FOCUS MODE 🌸";
+    const input = isBreak ? breakInput : focusInput;
+    const maximum = isBreak ? 120 : 300;
+    const minutes = Number(input.value);
+    input.value = Number.isFinite(minutes) ? Math.max(1, Math.min(maximum, Math.round(minutes))) : (isBreak ? 5 : 25);
+    resetTimer();
+    saveData();
+}
+document.getElementById("focusModeBtn").addEventListener("click", () => selectTimerMode(false));
+document.getElementById("breakModeBtn").addEventListener("click", () => selectTimerMode(true));
+document.getElementById("resetBankBtn").addEventListener("click", () => {
+    breakBankMinutes = 0;
+    updateBreakBank();
+    saveData();
+});
+// Edit the selected mode's duration directly inside the circle.
+let editingDuration = false;
+timerDisplay.addEventListener("focus", () => {
+    pauseTimer();
+    editingDuration = true;
+    timerDisplay.value = isBreak ? breakInput.value : focusInput.value;
+    document.getElementById("timerEditHint").textContent = "Enter minutes · Enter to save · Esc to cancel";
+    timerDisplay.select();
+});
+timerDisplay.addEventListener("blur", () => {
+    if (!editingDuration) return;
+    editingDuration = false;
+    const raw = timerDisplay.value.trim();
+    const minutes = Number(raw);
+    const maximum = isBreak ? 120 : 300;
+    if (!/^\d+$/.test(raw) || minutes < 1 || minutes > maximum) {
+        document.getElementById("timerEditHint").textContent = "Use 1–" + maximum + " whole minutes. Previous time kept.";
+        updateTimerDisplay();
+        return;
+    }
+    (isBreak ? breakInput : focusInput).value = minutes;
+    resetTimer();
+    saveData();
+    document.getElementById("timerEditHint").textContent = "Tap the time to set minutes";
+});
+timerDisplay.addEventListener("keydown", event => {
+    if (event.key === "Enter") { event.preventDefault(); timerDisplay.blur(); }
+    if (event.key === "Escape") {
+        editingDuration = false;
+        updateTimerDisplay();
+        document.getElementById("timerEditHint").textContent = "Tap the time to set minutes";
+        timerDisplay.blur();
+    }
+});

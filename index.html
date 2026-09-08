@@ -39,23 +39,21 @@
             00:00:00
         </div>
 
+        <div class="appearance-controls">
         <div class="theme-switch" role="group" aria-label="Appearance">
             <button type="button" data-theme-choice="basic" aria-pressed="true">☀ Basic</button>
             <button type="button" data-theme-choice="dark" aria-pressed="false">☾ Dark</button>
             <button type="button" data-theme-choice="custom" aria-pressed="false">✧ Custom</button>
         </div>
+        <label id="customBackgroundPicker" class="scenery-select" hidden>
+            <span>Scenery</span>
+            <select id="backgroundChoices" aria-label="Choose scenery"></select>
+        </label>
+        </div>
     </header>
 
 
-    <section id="customBackgroundPicker" class="background-picker" aria-label="Custom backgrounds" hidden>
-        <div class="background-picker-heading">
-            <h2>Choose your scenery</h2>
-            <p id="selectedBackground" role="status">Moon</p>
-        </div>
-        <div id="backgroundChoices" class="background-choices" role="group" aria-label="Background choices"></div>
-    </section>
-
-    <main>
+<main>
 
         <!-- ===================== -->
         <!-- LEFT PANEL -->
@@ -100,6 +98,10 @@
         <!-- ===================== -->
 
         <section class="timer-panel">
+            <div class="mode-switch" role="group" aria-label="Timer mode">
+                <button id="focusModeBtn" type="button" aria-pressed="true">Focus</button>
+                <button id="breakModeBtn" type="button" aria-pressed="false">Break</button>
+            </div>
 
             <h2 id="modeLabel">
                 FOCUS MODE
@@ -127,12 +129,7 @@
 
                 </svg>
 
-                <div class="timer-text"
-                    id="timer">
-
-                    25:00
-
-                </div>
+                <input class="timer-text" id="timer" type="text" inputmode="numeric" value="25:00" aria-label="Timer duration in minutes. Select Focus or Break, then edit here." autocomplete="off" spellcheck="false">
 
             </div>
 
@@ -156,46 +153,13 @@
 
 
 
-            <div class="settings">
+            <p class="timer-edit-hint" id="timerEditHint">Tap the time to set minutes</p>
+            <input type="hidden" id="focusMinutes" value="25">
+            <input type="hidden" id="breakMinutes" value="5">
 
-                <div class="setting-box">
+        </section>
 
-                    <label>
-
-                        Focus
-
-                    </label>
-
-                    <input
-                        type="number"
-                        id="focusMinutes"
-                        value="25"
-                        min="1"
-                        max="300">
-
-                </div>
-
-                <div class="setting-box">
-
-                    <label>
-
-                        Break
-
-                    </label>
-
-                    <input
-                        type="number"
-                        id="breakMinutes"
-                        value="5"
-                        min="1"
-                        max="120">
-
-                </div>
-
-            </div>
-
-
-
+        <section class="progress-panel" aria-label="Session and break bank">
             <div class="stats">
 
                 <div class="card">
@@ -241,6 +205,7 @@
                 🏦 Redeem Break
 
             </button>
+            <button id="resetBankBtn" type="button" class="reset-bank">↺ Reset Break Bank</button>
 
         </section>
 

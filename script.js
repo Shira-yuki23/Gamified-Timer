@@ -446,13 +446,13 @@ function updateBreakBank(){
         breakBankDisplay.textContent =
             `${breakBankMinutes} min ⚠`;
         breakBankDisplay.style.color =
-            "red";
+            "var(--bank-negative, red)";
     }
     else{
         breakBankDisplay.textContent =
             `${breakBankMinutes} min`;
         breakBankDisplay.style.color =
-            "#333";
+            "var(--bank-text, #333)";
     }
 }
 /* ===============================
@@ -462,7 +462,6 @@ function saveData(){
     let data;
     try { data = currentProgress(); }
     catch { return; }
-    if (window.meloSync?.save(data)) return;
     try {
         localStorage.setItem("melofocusGuestProgress", JSON.stringify(data));
         localStorage.setItem("melofocusTasks", JSON.stringify(data.tasks));
@@ -470,7 +469,7 @@ function saveData(){
     } catch { /* Timer remains usable if browser storage is unavailable. */ }
 }
 function loadData(){
-    const data = guestProgress();
+    const data = storedProgress();
     tasks = data.tasks;
     breakBankMinutes = data.breakBankMinutes;
     sessionCount = data.sessionCount;
@@ -660,7 +659,7 @@ redeemOverlay.addEventListener(
 document.addEventListener(
     "keydown",
     (e)=>{
-        if (window.meloAccountBusy || e.target?.closest?.("input, textarea, select, button, [contenteditable]")) return;
+        if (e.target?.closest?.("input, textarea, select, button, [contenteditable]")) return;
         if(e.code === "Space"){
             e.preventDefault();
             if(isRunning){pauseTimer(); }
@@ -703,7 +702,7 @@ if ("serviceWorker" in navigator) {
 }
 
 /* ===============================
-   Account progress bridge
+   Local progress storage
 ================================ */
 function defaultProgress() {
     return {tasks: [], breakBankMinutes: 0, sessionCount: 1, focusMinutes: 25, breakMinutes: 5};
@@ -728,7 +727,7 @@ function currentProgress() {
     return validateProgress({tasks, breakBankMinutes, sessionCount,
         focusMinutes: Number(focusInput.value), breakMinutes: Number(breakInput.value)});
 }
-function guestProgress() {
+function storedProgress() {
     try {
         const saved = localStorage.getItem("melofocusGuestProgress");
         if (saved) return validateProgress(JSON.parse(saved));
@@ -737,31 +736,6 @@ function guestProgress() {
             breakBankMinutes: Number(localStorage.getItem("melofocusBreakBank") || 0)});
     } catch { return defaultProgress(); }
 }
-function applyProgress(data, restart) {
-    const clean = validateProgress(data);
-    if (restart) {
-        stopTimer();
-        closeBreakDecision();
-        redeemOverlay.classList.add("hidden");
-        isBreak = false;
-        modeLabel.textContent = "FOCUS MODE 🌸";
-    }
-    tasks = clean.tasks;
-    breakBankMinutes = clean.breakBankMinutes;
-    sessionCount = clean.sessionCount;
-    focusInput.value = clean.focusMinutes;
-    breakInput.value = clean.breakMinutes;
-    selectedTaskIndex = -1;
-    sessionLabel.textContent = "#" + sessionCount;
-    renderTasks(); updateBreakBank();
-    if (restart) resetTimer();
-}
-window.meloProgress = {
-    defaults: defaultProgress, validate: validateProgress, guest: guestProgress,
-    apply: applyProgress, snapshot: currentProgress,
-    loadGuest: () => applyProgress(guestProgress(), true),
-    stop: () => { pauseTimer(); closeBreakDecision(); redeemOverlay.classList.add("hidden"); }
-};
 for (const input of [focusInput, breakInput]) {
     input.addEventListener("change", () => {
         const fallback = input === focusInput ? 25 : 5;

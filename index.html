@@ -16,6 +16,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
         rel="stylesheet">
 
+    <script src="theme.js"></script>
     <link rel="stylesheet" href="style.css">
 </head>
 
@@ -38,21 +39,20 @@
             00:00:00
         </div>
 
+        <div class="theme-switch" role="group" aria-label="Appearance">
+            <button type="button" data-theme-choice="basic" aria-pressed="true">☀ Basic</button>
+            <button type="button" data-theme-choice="dark" aria-pressed="false">☾ Dark</button>
+            <button type="button" data-theme-choice="custom" aria-pressed="false">✧ Custom</button>
+        </div>
     </header>
 
 
-    <section class="account-bar" aria-label="Account">
-        <div><strong id="accountName">Guest</strong><p id="syncStatus" role="status">Saved on this browser</p></div>
-        <div class="account-actions">
-            <button id="googleSignIn" type="button">Continue with Google</button>
-            <button id="syncRetry" type="button" hidden>Retry sync</button>
-            <button id="googleSignOut" type="button" hidden>Sign out</button>
+    <section id="customBackgroundPicker" class="background-picker" aria-label="Custom backgrounds" hidden>
+        <div class="background-picker-heading">
+            <h2>Choose your scenery</h2>
+            <p id="selectedBackground" role="status">Moon</p>
         </div>
-        <div id="syncConflict" hidden>
-            <p>Progress changed on another device. Choose a copy to continue syncing.</p>
-            <button id="useCloudProgress" type="button">Use cloud copy</button>
-            <button id="keepLocalProgress" type="button">Keep this device</button>
-        </div>
+        <div id="backgroundChoices" class="background-choices" role="group" aria-label="Background choices"></div>
     </section>
 
     <main>
@@ -360,8 +360,6 @@
 
 
     <script src="script.js"></script>
-    <script src="firebase-config.js"></script>
-    <script src="google-account.js"></script>
 
 </body>
 
